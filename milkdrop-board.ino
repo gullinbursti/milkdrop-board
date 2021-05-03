@@ -147,7 +147,9 @@ void loop() {
   if (digitalRead(PRNT_PIN) == HIGH && isPrintBtnUp) {
     Serial.println(F("PRINT DN"));
     isPrintBtnUp = false;
-//    Keyboard.write('a');
+    Keyboard.press(206);
+    delay(33);
+    Keyboard.releaseAll();
     delay(100);
   }
 
