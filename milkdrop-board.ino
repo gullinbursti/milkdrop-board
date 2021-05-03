@@ -8,17 +8,18 @@
 #include "Keyboard.h"
 
 
+const int RATE_PIN = A0;
+const int PREV_PIN = 2;
+const int NEXT_PIN = 3;
 const int FADE_PIN = 4;
 const int MASH_PIN = 14;
 const int LOCK_PIN = 16;
-const int PREV_PIN = 2;//8;
-const int NEXT_PIN = 3;//9;                                                             
 
 bool isFadeBtnUp = true;
 bool isMashBtnUp = true;
 bool isLockBtnUp = true;
 long curPos = 0;
-
+int prevRate = 1024;
 
 Encoder digiPot(PREV_PIN, NEXT_PIN);
 
@@ -30,6 +31,7 @@ void setup() {
   pinMode(FADE_PIN, INPUT_PULLUP);
   pinMode(MASH_PIN, INPUT);
   pinMode(LOCK_PIN, INPUT);
+  pinMode(RATE_PIN, INPUT_PULLUP);
 
   digiPot.write(0);
 
@@ -41,8 +43,8 @@ void loop() {
 
   long updPos = digiPot.read();
 
-//  Serial.print("LOCK_PIN [");
-//  Serial.print(digitalRead(LOCK_PIN));
+//  Serial.print("RATE_PIN [");
+//  Serial.print(analogRead(RATE_PIN));
 //  Serial.print("]");
 //  Serial.println(" =-= ");
 
@@ -89,6 +91,31 @@ void loop() {
     curPos = updPos;
   }
 
+  if (analogRead(RATE_PIN) < 1000) {
+    int rateVal = analogRead(RATE_PIN);
+    prevRate = rateVal;
+
+    Serial.print("rateVal [");
+    Serial.print(rateVal);
+    Serial.print("]");
+    Serial.println(" =-= ");
+
+    if (rateVal > 333) {
+      Serial.println(F("RATE--"));
+      Keyboard.write('-');
+      delay(333);
+    
+    } else if (rateVal > 33) {
+      Serial.println(F("RATE++"));
+      Keyboard.write('+');
+      delay(333);
+    }
+  
+  } else {
+    prevRate = 1024;
+  }
+
+  
   if (digitalRead(FADE_PIN) == LOW && isFadeBtnUp) {
 //    Serial.println(F("FADE DN"));
     isFadeBtnUp = false;
@@ -100,6 +127,7 @@ void loop() {
 //    Serial.println(F("FADE UP"));
     isFadeBtnUp = true;
   }
+
 
   if (digitalRead(LOCK_PIN) == HIGH && isLockBtnUp) {
     Serial.println(F("LOCK DN"));
@@ -114,6 +142,7 @@ void loop() {
     Serial.println(F("LOCK UP"));
     isLockBtnUp = true;
   }
+
 
   if (digitalRead(MASH_PIN) == HIGH && isMashBtnUp) {
     Serial.println(F("MASH DN"));
