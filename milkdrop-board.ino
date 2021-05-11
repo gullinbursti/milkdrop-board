@@ -102,15 +102,22 @@ void loop() {
 //    Serial.print("]");
 //    Serial.println(" =-= ");
 
-    if (rateVal > 333) {
-//      Serial.println(F("RATE--"));
-      Keyboard.write('-');
-      delay(333);
-    
-    } else if (rateVal > 33) {
+    if (rateVal < 50) {
 //      Serial.println(F("RATE++"));
       Keyboard.write('+');
-      delay(333);
+      delay(125);
+    
+    } else if (rateVal < 150) {
+//      Serial.println(F("RATE--"));
+      Keyboard.write('-');
+      delay(125);
+    
+    } else {
+//      Serial.println(F("RATE MAX"));
+      for (byte i=0; i<5; i++) {
+        Keyboard.write('+');
+        delay(125);
+      }
     }
   }
 
@@ -150,7 +157,7 @@ void loop() {
     Keyboard.press(206);
     delay(33);
     Keyboard.releaseAll();
-    delay(100);
+    delay(125);
   }
 
   if (digitalRead(PRNT_PIN) == LOW && !isPrintBtnUp) {
@@ -163,7 +170,7 @@ void loop() {
 //    Serial.println(F("MASH DN"));
     isMashBtnUp = false;
     Keyboard.write('a');
-    delay(100);
+    delay(125);
   }
 
   if (digitalRead(MASH_PIN) == LOW && !isMashBtnUp) {
